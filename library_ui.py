@@ -25,10 +25,10 @@ class LibraryUI:
         while True:
             key = self.stdscr.getkey()
             if key == '1':
-                self.current_user = self.library.users[0]  # Alice
+                self.current_user = self.library.users[0]  
                 break
             elif key == '2':
-                self.current_user = self.library.users[1]  # Bob
+                self.current_user = self.library.users[1]  
                 break
             elif key == '3':
                 exit()
