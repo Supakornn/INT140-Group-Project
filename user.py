@@ -4,5 +4,11 @@ class User:
         self.name = name
         self.borrowed_books = []
 
-    def __str__(self):
-        return f"User ID: {self.user_id}, Name: {self.name}, Borrowed Books: {[book.title for book in self.borrowed_books]}"
+    def show_info(self):
+        print(f"User: {self.name}")
+        print("Borrowed Books:")
+        if not self.borrowed_books:
+            print("No books borrowed.")
+        else:
+            for book in self.borrowed_books:
+                print(f"- {book.title} (Returned: {book.is_borrowed})")
