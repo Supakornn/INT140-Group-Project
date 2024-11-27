@@ -1,12 +1,11 @@
 class Cinema:
-    def __init__(self):
-        pass
-        
-    def add_movie(self, movie):
-        pass
-
-    def get_movies(self):
-        pass
+    def __init__(self, name):
+        self.name = name
+        self.theaters = []
     
-    def buy_ticket(self):
-        pass
+    def add_theater(self, theater):
+        self.theaters.append(theater)
+
+    def show_theaters(self):
+        for theater in self.theaters:
+            print(f"Theater {theater.theater_id}: {theater.name}")
