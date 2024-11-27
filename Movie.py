@@ -1,8 +1,8 @@
-class Showtime:
+class Movie:
     def __init__(self, movie_name, time):
         self.movie_name = movie_name
         self.time = time
-        self.bookings = []  # การจอง
+        self.bookings = [] 
     
     def add_booking(self, booking):
         self.bookings.append(booking)
