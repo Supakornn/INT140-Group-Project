@@ -11,3 +11,4 @@ class Movie:
         print(f"Bookings for {self.movie_name} at {self.time}:")
         for booking in self.bookings:
             print(f"- {booking.customer_name} reserved seat {booking.seat.row}-{booking.seat.number}")
+            

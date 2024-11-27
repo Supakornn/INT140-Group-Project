@@ -10,7 +10,7 @@ class Theater:
     def _generate_seats(self, seats_per_row, rows):
         return [[Seat(row, seat) for seat in range(1, seats_per_row + 1)] for row in range(1, rows + 1)]
     
-    def add_showtime(self, showtime):
+    def add_movie(self, showtime):
         self.showtimes.append(showtime)
         
     def show_seats(self):

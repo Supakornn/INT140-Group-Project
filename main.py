@@ -9,7 +9,7 @@ theater1 = Theater(1, "Theater One", seats_per_row=5, rows=5)
 cinema.add_theater(theater1)
 
 movie1 = Movie("Avengers", "19:00")
-theater1.add_showtime(movie1)
+theater1.add_movie(movie1)
 
 cinema.show_theaters()
 
