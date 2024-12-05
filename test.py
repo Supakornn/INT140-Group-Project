@@ -187,38 +187,48 @@ class CinemaApp:
 
             # Prompt for row and column selection
             while True:
-                row_input = input("Enter row number (or type 'exit' to cancel): ")
-                if row_input.lower() == "exit":
-                    print("Booking canceled!")
-                    return
-                try:
-                    row = int(row_input) - 1
-                    if row < 0 or row >= theater.rows:
-                        print("Invalid row number! Try again.")
+                # Ask for row and column input together
+                while True:
+                    row_input = input("Enter row number (or type 'exit' to cancel): ")
+                    if row_input.lower() == "exit":
+                        print("Booking canceled!")
+                        return
+                    try:
+                        row = int(row_input) - 1
+                        if row < 0 or row >= theater.rows:
+                            print("Invalid row number! Try again.")
+                            continue
+                    except ValueError:
+                        print("Invalid input. Please enter a valid row number.")
                         continue
-                except ValueError:
-                    print("Invalid input. Please enter a valid row number.")
-                    continue
-                break
 
-            while True:
-                col_input = input("Enter column letter (or type 'exit' to cancel): ")
-                if col_input.lower() == "exit":
-                    print("Booking canceled!")
-                    return
-                col_input = col_input.upper()
-                if col_input not in string.ascii_uppercase[:theater.cols]:
-                    print("Invalid column letter! Try again.")
-                    continue
-                col = string.ascii_uppercase.index(col_input)
-                break
+                    # Ask for column input
+                    col_input = input("Enter column letter (or type 'exit' to cancel): ")
+                    if col_input.lower() == "exit":
+                        print("Booking canceled!")
+                        return
+                    col_input = col_input.upper()
+                    if col_input not in string.ascii_uppercase[:theater.cols]:
+                        print("Invalid column letter! Try again.")
+                        continue
+                    col = string.ascii_uppercase.index(col_input)
 
-            theater.book_seat(row, col)
-            ticket = f"{movie_title} | {theater_name} | {showtime} | Seat ({row + 1},{col_input})"
-            self.current_user.add_ticket(ticket)
-            print("Ticket booked successfully!")
+                    # Check if the seat is already booked
+                    if theater.seats[row][col].is_booked:
+                        print("Seat is already booked! Please choose a different seat.")
+                        continue  # Ask the user for a new row and column
+                    break  # Exit the loop if the seat is available
+
+                # Book the seat
+                theater.book_seat(row, col)
+                ticket = f"{movie_title} | {theater_name} | {showtime} | Seat ({row + 1},{col_input})"
+                self.current_user.add_ticket(ticket)
+                print("Ticket booked successfully!")
+                break  # Exit the while loop after booking successfully
+
         except Exception as e:
             print(e)
+
 
     def view_tickets(self):
         if not self.current_user:
@@ -259,12 +269,12 @@ class CinemaApp:
             elif choice == "5":
                 self.view_tickets()
             elif choice == "6":
+                print("Goodbye!")
                 break
             else:
-                print("Invalid choice, please try again!")
+                print("Invalid option. Please try again.")
 
 
-# Run the application
 if __name__ == "__main__":
     app = CinemaApp()
     app.main_menu()
