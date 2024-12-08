@@ -1,6 +1,5 @@
 import string
 
-
 # Mockup Data
 class MockData:
     CINEMA_NAME = "MyCinema"
@@ -38,7 +37,6 @@ class Seat:
         self.is_booked = False
 
     def display(self):
-        # Display emoji based on seat booking status
         return "\U0001FA91" if not self.is_booked else "❌"
 
     def book(self):
@@ -52,24 +50,22 @@ class Theater:
         self.rows = rows
         self.cols = cols
         self.showtime_seating = {}  # Maps showtime to seating arrangement
-        for showtime in MockData.MOVIES.values():
-            for theater_showtime in showtime.values():
-                for time in theater_showtime:
-                    self.showtime_seating[time] = [
-                        [Seat(r, c) for c in range(cols)] for r in range(rows)
-                    ]
+
+    def setup_showtimes(self, showtimes):
+        for showtime in showtimes:
+            self.showtime_seating[showtime] = [
+                [Seat(r, c) for c in range(self.cols)] for r in range(self.rows)
+            ]
 
     def display_seats(self, showtime):
-        # Display column labels (A, B, C, ...)
         if showtime not in self.showtime_seating:
             print("Showtime not found!")
             return
         col_labels = list(string.ascii_uppercase[:self.cols])
         print("    " + "  ".join(col_labels))  # Print column headers
         for r_idx, row in enumerate(self.showtime_seating[showtime], start=1):
-            # Display each row with its seats and row number
             row_display = " ".join(seat.display() for seat in row)
-            print(f"{r_idx:2} {row_display}")  # Print row number with seat displays
+            print(f"{r_idx:2} {row_display}")
 
     def book_seat(self, row, col, showtime):
         if showtime not in self.showtime_seating:
@@ -77,48 +73,73 @@ class Theater:
         self.showtime_seating[showtime][row][col].book()
 
 
+class Movie:
+    def __init__(self, title):
+        self.title = title
+        self.theaters = {}  # theater_name -> list of showtimes
+
+    def add_showtime(self, theater_name, showtimes):
+        self.theaters[theater_name] = showtimes
+
+    def get_theaters(self):
+        return self.theaters.keys()
+
+    def get_showtimes(self, theater_name):
+        return self.theaters.get(theater_name, [])
+
+
 class CinemaApp:
     def __init__(self):
         self.users = {}  # username -> User
         self.current_user = None
         self.theaters = {}  # theater_name -> Theater
+        self.movies = {}  # movie_title -> Movie
         self.load_theaters()
+        self.load_movies()
 
     def load_theaters(self):
         for theater_name, config in MockData.THEATERS.items():
             self.theaters[theater_name] = Theater(config["rows"], config["cols"])
+
+    def load_movies(self):
+        for movie_title, theaters in MockData.MOVIES.items():
+            movie = Movie(movie_title)
+            for theater_name, showtimes in theaters.items():
+                movie.add_showtime(theater_name, showtimes)
+                if theater_name in self.theaters:
+                    self.theaters[theater_name].setup_showtimes(showtimes)
+            self.movies[movie_title] = movie
 
     def register(self):
         while True:
             username = input("Enter username (or type 'exit' to cancel): ")
             if username.lower() == 'exit':
                 print("Exiting registration!")
-                return None, None
+                return
             if username in self.users:
                 print("Username already exists! Please try again.")
                 continue
-            password = input("Enter password (or type 'exit' to cancel): ")
+            password = input("Enter password: (or type 'exit' to cancel): ")
             if password.lower() == 'exit':
                 print("Exiting registration!")
-                return None, None
+                return
             self.users[username] = User(username, password)
             print("User registered successfully!")
-            return username, password
-
+            return
 
     def login(self):
         while True:
             username = input("Enter username (or type 'exit' to cancel): ")
-            if username == 'exit':
+            if username.lower() == 'exit':
                 print("Exiting login!")
-                return None
+                return
             if username not in self.users:
                 print("Username not found. Please try again.")
                 continue
-            password = input("Enter password (or type 'exit' to cancel): ")
-            if password == 'exit':
+            password = input("Enter password: (or type 'exit' to cancel): ")
+            if password.lower() == 'exit':
                 print("Exiting login!")
-                return None
+                return
             if self.users[username].password != password:
                 print("Incorrect password. Please try again.")
                 continue
@@ -128,14 +149,14 @@ class CinemaApp:
 
     def logout(self):
         self.current_user = None
-        print(f"Logout success!")
+        print("Logout success!")
 
     def view_movies(self):
-        print(f"--- Movies in {MockData.CINEMA_NAME} ---")
-        for idx, (movie, theaters) in enumerate(MockData.MOVIES.items(), start=1):
-            print(f"{idx}. {movie}:")
-            for theater, showtimes in theaters.items():
-                print(f"  {theater}: {', '.join(showtimes)}")
+        print("\n--- Movies in Cinema ---")
+        for idx, (movie_title, movie) in enumerate(self.movies.items(), start=1):
+            print(f"{idx}. {movie_title}:")
+            for theater_name, showtimes in movie.theaters.items():
+                print(f"  {theater_name}: {', '.join(showtimes)}")
 
     def book_ticket(self):
         if not self.current_user:
@@ -144,31 +165,40 @@ class CinemaApp:
 
         # Display movies
         print("\n--- Select a Movie ---")
-        movies = list(MockData.MOVIES.keys())
-        for idx, movie in enumerate(movies, start=1):
-            print(f"{idx}. {movie}")
+        movie_titles = list(self.movies.keys())
+        for idx, movie_title in enumerate(movie_titles, start=1):
+            print(f"{idx}. {movie_title}")
 
         try:
-            movie_idx = int(input("Enter movie index (or type 'exit' to cancel): ")) - 1
-            if movie_idx == 'exit':
-                print("Exiting booking!")
-                return
-            movie_title = movies[movie_idx]
+            movie_idx = input("Enter movie index: (or type 'exit' to cancel): ")
+            if movie_idx.lower() == 'exit':
+                print("Exiting ticket booking!")
+            movie_idx = int(movie_idx) - 1
+            if movie_idx < 0:
+                raise ValueError
+            if movie_idx >= len(movie_titles):
+                raise IndexError
+            movie_title = movie_titles[movie_idx]
         except (ValueError, IndexError):
             print("Invalid input!")
             return
 
+        movie = self.movies[movie_title]
+
         # Select theater
         print("\n--- Select a Theater ---")
-        theaters = list(MockData.MOVIES[movie_title].keys())
-        for idx, theater in enumerate(theaters, start=1):
-            print(f"{idx}. {theater}")
-
+        theaters = list(movie.get_theaters())
+        for idx, theater_name in enumerate(theaters, start=1):
+            print(f"{idx}. {theater_name}")
         try:
-            theater_idx = int(input("Enter theater index (or type 'exit' to cancel): ")) - 1
-            if theater_idx == 'exit':
-                print("Exiting booking!")
-                return
+            theater_idx = input("Enter theater index: (or type 'exit' to cancel): ")
+            if theater_idx.lower() == 'exit':
+                print("Exiting ticket booking!")
+            theater_idx = int(theater_idx) - 1
+            if theater_idx < 0:
+                raise ValueError
+            if theater_idx >= len(theaters):
+                raise IndexError
             theater_name = theaters[theater_idx]
         except (ValueError, IndexError):
             print("Invalid input!")
@@ -176,15 +206,17 @@ class CinemaApp:
 
         # Select showtime
         print("\n--- Select a Showtime ---")
-        showtimes = MockData.MOVIES[movie_title][theater_name]
+        showtimes = movie.get_showtimes(theater_name)
         for idx, showtime in enumerate(showtimes, start=1):
             print(f"{idx}. {showtime}")
 
         try:
-            showtime_idx = int(input("Enter showtime index (or type 'exit' to cancel): ")) - 1
-            if showtime_idx == 'exit':
-                print("Exiting booking!")
-                return
+            showtime_idx = input("Enter showtime index: (or type 'exit' to cancel): ")
+            showtime_idx = int(showtime_idx) - 1
+            if showtime_idx < 0:
+                raise ValueError
+            if showtime_idx >= len(showtimes):
+                raise IndexError
             showtime = showtimes[showtime_idx]
         except (ValueError, IndexError):
             print("Invalid input!")
@@ -197,28 +229,27 @@ class CinemaApp:
         while True:
             theater.display_seats(showtime)
             try:
-                row_input = input("Enter row number (or type 'exit' to cancel): ")
-                if row_input.lower() == 'exit':
-                    print("Exiting booking!")
+                row = input("Enter row number: (or type 'exit' to cancel): ")
+                if row.lower() == 'exit':
+                    print("Exiting ticket booking!")
                     return
-                row = int(row_input) - 1
-                col_input = input("Enter column letter (or type 'exit' to cancel): ").upper()
-                if col_input.lower() == 'exit':
-                    print("Exiting booking!")
+                row = int(row) - 1
+                if row < 0 or row >= theater.rows:
+                    raise IndexError
+                col = input("Enter column letter: (or type 'exit' to cancel): ")
+                if col.lower() == 'exit':
+                    print("Exiting ticket booking!")
                     return
-                col = string.ascii_uppercase.index(col_input)
+                col = string.ascii_uppercase.index(col.upper())
                 theater.book_seat(row, col, showtime)
-                ticket = f"{movie_title} | {theater_name} | {showtime} | Seat ({row + 1},{chr(col + 65)})"
+                ticket = f"{movie_title} | {theater_name} | {showtime} | Seat ({row + 1}, {chr(col + 65)})"
                 self.current_user.add_ticket(ticket)
                 print("Ticket booked successfully!")
                 break
-            except ValueError:
-                print("Invalid row or column input. Please try again.")
-            except IndexError:
-                print("Invalid seat coordinates. Please try again.")
+            except (ValueError, IndexError):
+                print("Invalid input! Please try again.")
             except Exception as e:
-                print(f"Error: {e}. Please try a different seat.")
-
+                print(f"Error: {e}. Please try again.")
 
     def view_tickets(self):
         if not self.current_user:
