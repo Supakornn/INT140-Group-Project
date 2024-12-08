@@ -1,102 +1,19 @@
+from Bl.MockData import MockData
+from Bl.Movie import Movie
+from Bl.Theater import Theater
+from Bl.User import User
 import string
-
-# Mockup Data
-class MockData:
-    CINEMA_NAME = "MyCinema"
-    MOVIES = {
-        "Avatar": {
-            "Theater 1": ["10:00", "14:00"],
-            "Theater 2": ["18:00"],
-        },
-        "Titanic": {
-            "Theater 1": ["12:00", "16:00"],
-            "Theater 2": ["20:00"],
-        },
-    }
-    THEATERS = {
-        "Theater 1": {"rows": 5, "cols": 5},
-        "Theater 2": {"rows": 4, "cols": 6},
-    }
-
-
-# Business Logic
-class User:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.tickets = []  # List of tickets booked by the user
-
-    def add_ticket(self, ticket):
-        self.tickets.append(ticket)
-
-
-class Seat:
-    def __init__(self, row, col):
-        self.row = row
-        self.col = col
-        self.is_booked = False
-
-    def display(self):
-        return "\U0001FA91" if not self.is_booked else "❌"
-
-    def book(self):
-        if self.is_booked:
-            raise Exception("Seat already booked!")
-        self.is_booked = True
-
-
-class Theater:
-    def __init__(self, rows, cols):
-        self.rows = rows
-        self.cols = cols
-        self.showtime_seating = {}  # Maps showtime to seating arrangement
-
-    def setup_showtimes(self, showtimes):
-        for showtime in showtimes:
-            self.showtime_seating[showtime] = [
-                [Seat(r, c) for c in range(self.cols)] for r in range(self.rows)
-            ]
-
-    def display_seats(self, showtime):
-        if showtime not in self.showtime_seating:
-            print("Showtime not found!")
-            return
-        col_labels = list(string.ascii_uppercase[:self.cols])
-        print("    " + "  ".join(col_labels))  # Print column headers
-        for r_idx, row in enumerate(self.showtime_seating[showtime], start=1):
-            row_display = " ".join(seat.display() for seat in row)
-            print(f"{r_idx:2} {row_display}")
-
-    def book_seat(self, row, col, showtime):
-        if showtime not in self.showtime_seating:
-            raise Exception("Invalid showtime!")
-        self.showtime_seating[showtime][row][col].book()
-
-
-class Movie:
-    def __init__(self, title):
-        self.title = title
-        self.theaters = {}  # theater_name -> list of showtimes
-
-    def add_showtime(self, theater_name, showtimes):
-        self.theaters[theater_name] = showtimes
-
-    def get_theaters(self):
-        return self.theaters.keys()
-
-    def get_showtimes(self, theater_name):
-        return self.theaters.get(theater_name, [])
-
 
 class CinemaApp:
     def __init__(self):
         self.users = {}  # username -> User
         self.current_user = None
-        self.theaters = {}  # theater_name -> Theater
-        self.movies = {}  # movie_title -> Movie
+        self.theaters = {}  # Theater -> Theater
+        self.movies = {}  # Movie_title -> Movie
         self.load_theaters()
         self.load_movies()
 
+    #load theaters and movies data
     def load_theaters(self):
         for theater_name, config in MockData.THEATERS.items():
             self.theaters[theater_name] = Theater(config["rows"], config["cols"])
@@ -163,7 +80,7 @@ class CinemaApp:
             print("Please log in to book a ticket!")
             return
 
-        # Display movies
+        # Select Movie
         print("\n--- Select a Movie ---")
         movie_titles = list(self.movies.keys())
         for idx, movie_title in enumerate(movie_titles, start=1):
