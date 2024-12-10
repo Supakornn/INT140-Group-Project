@@ -1,5 +1,5 @@
-from Ui.CinemaUi import CinemaApp
+from Ui.CinemaUi import CinemaUi 
 
 if __name__ == "__main__":
-    app = CinemaApp()
+    app = CinemaUi()
     app.main_menu()

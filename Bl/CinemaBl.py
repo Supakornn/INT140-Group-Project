@@ -38,7 +38,7 @@ class CinemaBl:
         if self.users[username].password != password:
             raise ValueError("Incorrect password. Please try again.")
         self.current_user = self.users[username]
-        return self.current_user
+        return self.current_user.username
     
     def get_current_user(self):
         return self.current_user
@@ -119,3 +119,13 @@ class CinemaBl:
     
     def book_ticket(self,theater,showtime,row,col):
         return theater.book_seat(row, col, showtime)
+
+    def get_user_tickets(self):
+        if self.current_user is None:
+            raise ValueError("Please login to view tickets.")
+        if self.current_user.tickets is None:
+            raise ValueError("No tickets booked yet.")
+        return self.current_user.tickets
+    
+    
+    

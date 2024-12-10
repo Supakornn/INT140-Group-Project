@@ -12,14 +12,11 @@ class CinemaUi:
                 if username.lower() == 'exit':
                     print("Exiting registration!")
                     return
-                if username in self.users:
-                    print("Username already exists! Please try again.")
-                    continue
                 password = input("Enter password: (or type 'exit' to cancel): ")
                 if password.lower() == 'exit':
                     print("Exiting registration!")
                     return
-                self.CinemaBl.register(username, password)
+                self.cinemaBl.register(username, password)
                 print("User registered successfully!")
                 return
             except Exception as e:
@@ -42,7 +39,7 @@ class CinemaUi:
                 if password.lower() == 'exit':
                     print("Exiting login!")
                     return
-                user = self.CinemaBl.login(username, password)
+                user = self.cinemaBl.login(username, password)
                 print(f"Welcome, {user}!")
                 break
             except Exception as e:
@@ -141,21 +138,19 @@ class CinemaUi:
                     print(e)
 
     def view_tickets(self):
-        if not self.current_user:
-            print("Please log in to view your tickets!")
-            return
-
         print(f"--- Tickets for {self.current_user.username} ---")
-        if not self.current_user.tickets:
-            print("No tickets booked yet!")
-        else:
-            for ticket in self.current_user.tickets:
+        try:
+            tickets = self.cinemaBl.get_user_tickets()
+            for ticket in tickets:
                 print(ticket)
-
+        except Exception as e:
+            print(e)
+            return
+        
     def main_menu(self):
         while True:
             print("\n=== Cinema Ticket Booking ===")
-            if self.current_user is None:
+            if self.cinemaBl.get_current_user() is None:
                 print("1. Register")
                 print("2. Login")
                 print("3. View Movies")
