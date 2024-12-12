@@ -1,9 +1,6 @@
 class Seat:
     def __init__(self, row: int, col: int):
-        if not isinstance(row, int) or not isinstance(col, int):
-            raise ValueError("Row and column must be integers")
-        if row < 0 or col < 0:
-            raise ValueError("Row and column must be non-negative")
+        self._validate_position(row, col)
         self.row: int = row
         self.col: int = col
         self.is_booked: bool = False
@@ -15,4 +12,10 @@ class Seat:
         if self.is_booked:
             raise Exception("Seat already booked!")
         self.is_booked = True
+
+    def _validate_position(self, row: int, col: int) -> None:
+        if not isinstance(row, int) or not isinstance(col, int):
+            raise ValueError("Row and column must be integers")
+        if row < 0 or col < 0:
+            raise ValueError("Row and column must be non-negative")
 

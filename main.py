@@ -1,5 +1,8 @@
 from Ui.CinemaUI import CinemaUI
 
-if __name__ == "__main__":
+def main():
     app = CinemaUI()
     app.main_menu()
+
+if __name__ == "__main__":
+    main()

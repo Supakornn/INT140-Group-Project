@@ -6,7 +6,7 @@ class Theater:
     def __init__(self, rows: int, cols: int):
         self.rows: int = rows
         self.cols: int = cols
-        self.showtime_seating: Dict[str, List[List[Seat]]] = {}  # Maps showtime to seating arrangement
+        self.showtime_seating: Dict[str, List[List[Seat]]] = {}  
 
     def setup_showtimes(self, showtimes: List[str]) -> None:
         for showtime in showtimes:
