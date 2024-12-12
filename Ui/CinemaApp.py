@@ -218,8 +218,3 @@ class CinemaApp:
                     self.logout()
                 else:
                     print("Invalid option. Please try again.")
-
-
-if __name__ == "__main__":
-    app = CinemaApp()
-    app.main_menu()
