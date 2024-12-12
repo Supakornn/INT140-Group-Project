@@ -145,16 +145,15 @@ class CinemaUI:
         # Book seat
         theater = self.cinema_bl.get_theaters()[theater_name]
         print(f"\n--- Booking Ticket for {movie_title} ---")
-
         seat_err_count = 0
         while seat_err_count < 5:
             try:
                 seat_display: list = theater.display_seats(showtime)
                 for line in seat_display:
                     print(line)
-                row: str = input("Enter row number: (or type 'exit' to cancel): ")
+                row: str = input(f"Enter row number: (or type 'exit' to cancel): ")
                 if row.lower() == 'exit':
-                    print("Exiting ticket booking!")
+                    print("Exiting ticket bookingå!")
                     return
                 if not row.isdigit() or int(row) < 1 or int(row) > theater.rows:
                     raise ValueError("Invalid row number!")

@@ -18,10 +18,13 @@ class Theater:
         if showtime not in self.showtime_seating:
             raise Exception("Showtime not found!")
         col_labels = list(string.ascii_uppercase[:self.cols])
-        seat_display = ["   " + "  ".join(col_labels)]  # Column headers
+        screen_line = "SCREEN".center(self.cols * 3 + 3)
+        seat_display = [""]
+        seat_display.append(screen_line) # screen line
+        seat_display.append("   " + "  ".join(col_labels)) # header column labels (A, B, C, ...)
         for r_idx, row in enumerate(self.showtime_seating[showtime], start=1):
-            row_display = " ".join(seat.display() for seat in row)
-            seat_display.append(f"{r_idx:2} {row_display}")
+            row_display = " ".join(seat.display() for seat in row) 
+            seat_display.append(f"{r_idx} {row_display}")
         return seat_display
 
     def book_seat(self, row: int, col: int, showtime: str) -> None:
