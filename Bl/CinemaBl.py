@@ -42,9 +42,3 @@ class CinemaBl:
 
     def get_theaters(self) -> Dict[str, Theater]:
         return self.theaters
-
-    def display_user_tickets(self, user: User) -> None:
-        tickets = user.view_tickets()
-        print(f"--- Tickets for {user.username} ---")
-        for ticket in tickets:
-            print(ticket)
