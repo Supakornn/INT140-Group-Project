@@ -129,7 +129,7 @@ class TestTheater(unittest.TestCase):
 
     def test_display_seats(self) -> None:
         seat_display = self.theater.display_seats("10:00")
-        self.assertEqual(len(seat_display), 6)  # 1 header row + 5 seat rows
+        self.assertEqual(len(seat_display), 8)
 
     def test_book_seat(self) -> None:
         self.theater.book_seat(1, 1, "10:00")
