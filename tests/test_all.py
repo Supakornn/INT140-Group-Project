@@ -9,7 +9,6 @@ from Bl.CinemaBl import CinemaBl
 from Bl.Theater import Theater
 from Bl.Seat import Seat
 from Bl.Movie import Movie
-from Bl.MockData import MockData
 
 class TestUser(unittest.TestCase):
     def setUp(self) -> None:
